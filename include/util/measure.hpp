@@ -22,9 +22,6 @@
 
 #include <algorithm>
 #include <chrono>
-#ifdef MALLOC_COUNT
-    #include <malloc_count.h>
-#endif
 #include <sstream>
 
 namespace pmc {
@@ -47,50 +44,16 @@ struct time_measure {
   }
 };
 
-#ifdef MALLOC_COUNT
-struct memory_measure {
-  size_t mem_pre;
-  size_t mem_peak;
-
-  void begin() {
-    malloc_count_reset_peak();
-    mem_pre = malloc_count_current();
-  }
-
-  void end() {
-    mem_peak = malloc_count_peak();
-  }
-
-  size_t memory() {
-    return mem_peak-mem_pre;
-  }
-};
-#else
-struct memory_measure {
-  void begin() { }
-
-  void end() {  }
-
-  size_t memory() {
-    return 0;
-  }
-};
-#endif
-
 template<typename runner_type>
-static inline std::pair <size_t, size_t>
-get_time_mem(runner_type const &runner) {
+static inline size_t
+get_time(runner_type const &runner) {
   time_measure time_measurement;
-  memory_measure mem_measurement;
 
   time_measurement.begin();
-  mem_measurement.begin();
   runner();
-  mem_measurement.end();
   time_measurement.end();
   size_t const time = time_measurement.millis();
-  size_t const mem = mem_measurement.memory();
-  return {time, mem};
+  return time;
 }
 
 } // namespace pmc

@@ -36,9 +36,6 @@ set(CMAKE_CXX_FLAGS_RELEASE
         "${CMAKE_CXX_FLAGS_RELEASE} -O3 -funroll-loops -march=native -DNDEBUG")
 set(CMAKE_CXX_FLAGS_DEBUG "${CMAKE_CXX_FLAGS_DEBUG} -O0 -ggdb -DDEBUG")
 
-# Set Variable if memory should be measured
-option(MALLOC_COUNT "Use malloc_count" OFF)
-
 # Libraries
 set(PAR_MAX_CUT_LIBRARIES stdc++fs)
 
@@ -76,15 +73,6 @@ if(MOSEK_FOUND)
     message(STATUS "FUSION_LIBRARY = ${FUSION_LIBRARY}")
     set(PAR_MAX_CUT_LIBRARIES ${PAR_MAX_CUT_LIBRARIES} ${MOSEK_LIBRARY} ${FUSION_LIBRARY})
     add_definitions(-DUSE_MOSEK=${MOSEK_FOUND})
-endif()
-
-# Add malloc_count
-if(MALLOC_COUNT)
-    message("Use malloc_count...")
-    add_library(malloc_count "${PROJECT_SOURCE_DIR}/external/malloc_count/malloc_count.c")
-    set(PAR_MAX_CUT_LIBRARIES ${PAR_MAX_CUT_LIBRARIES} malloc_count dl)
-    include_directories("${PROJECT_SOURCE_DIR}/external/malloc_count")
-    add_definitions(-DMALLOC_COUNT=${MALLOC_COUNT})
 endif()
 
 include_directories("${PROJECT_SOURCE_DIR}/include")

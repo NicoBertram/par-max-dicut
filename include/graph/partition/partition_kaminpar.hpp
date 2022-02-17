@@ -208,8 +208,6 @@ struct partitioner_kaminpar {
     // Set number of threads which are used by TBB
     auto gc = tbb::global_control{tbb::global_control::max_allowed_parallelism, numthreads}; // object must stay alive
 
-    time_measure time;
-    time.begin();
     auto partitioner_builder =
             libkaminpar::PartitionerBuilder
             ::from_adjacency_array(n, xadj, adjncy);
@@ -221,8 +219,6 @@ struct partitioner_kaminpar {
     partitioner.set_option("seed", std::to_string(seed_for_kaminpar));
     //partitioner.set_option("--quiet", "true");
     std::unique_ptr<libkaminpar::BlockID[]> partition = partitioner.partition(k);
-    time.end();
-    LOG_STATS << "kahip" << time.millis();
 
     if (suppress_output)
         manage_cout.unmute();

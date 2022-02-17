@@ -55,8 +55,8 @@ private:
         seqmc_list.compare(seqmc::name()) == 0 &&
         merger_list.compare(merger::name()) == 0)
           for (unsigned int i = 0; i < runs; ++i) {
-            auto tm = get_time_mem([&]() { meta::run(G, K, threads, optimize); });
-            reporter(G, K, threads, i, meta::name(), tm.first, tm.second);
+            auto time = get_time([&]() { meta::run(G, K, threads, optimize); });
+            reporter(G, K, threads, i, meta::name(), time);
           }
       run_internal<t1, t2, t3 + 1>(G, K, threads, partitioner_list, seqmc_list, merger_list, optimize, runs, reporter);
     } else if constexpr (t3 == std::tuple_size_v<T3>) {

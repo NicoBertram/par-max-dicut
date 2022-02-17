@@ -70,13 +70,10 @@ private:
     std::cout << "Running benchmark with " << threads << " threads." << std::endl;
     auto graph_cp = graph.copy();
 
-    auto reporter = [&](GraphType const &G, unsigned int K, unsigned int threads, unsigned int run, std::string algo, uint64_t time, uint64_t mem) {
+    auto reporter = [&](GraphType const &G, unsigned int K, unsigned int threads, unsigned int run, std::string algo, uint64_t time) {
         std::cout << "RESULT dir=" << pmc::evaluate_directed_cut(G)
                   << " rev=" << pmc::evaluate_reverse_directed_cut(G)
                   << " undir=" << pmc::evaluate_undirected_cut(G) << " time=" << time
-                  #ifdef MALLOC_COUNT
-                    << " memory=" << mem
-                  #endif
                   << " algo=" << algo << " K=" << K << " threads=" << threads << " run=" << run << " n=" << G.node_count()
                   << " m=" << G.edge_count() << " file=" << path << " " << pmc::clog.get_and_clear_log() << std::endl;
     };
@@ -98,19 +95,19 @@ private:
     using mergetree_4 = pmc::par_mergetree<4>;
     using mergetree_16 = pmc::par_mergetree<16>;
 
-    using goemans_32vec_0e = pmc::seq_goemans<32,0>;
-    using goemans_32vec_1e = pmc::seq_goemans<32,1>;
-    using goemans_32vec_2e = pmc::seq_goemans<32,2>;
-    using goemans_32vec_5e = pmc::seq_goemans<32,5>;
-    using goemans_32vec_10e = pmc::seq_goemans<32,10>;
-    using goemans_32vec_15e = pmc::seq_goemans<32,15>;
-    using goemans_32vec_20e = pmc::seq_goemans<32,20>;
-    using goemans_32vec_25e = pmc::seq_goemans<32,25>;
-    using goemans_32vec_30e = pmc::seq_goemans<32,30>;
-    using goemans_32vec_35e = pmc::seq_goemans<32,35>;
-    using goemans_32vec_40e = pmc::seq_goemans<32,40>;
-    using goemans_32vec_45e = pmc::seq_goemans<32,45>;
-    using goemans_32vec_50e = pmc::seq_goemans<32,50>;
+    using goemans_32vec_0e = pmc::seq_goemans;
+    using goemans_32vec_1e = pmc::seq_goemans_param<32,1>;
+    using goemans_32vec_2e = pmc::seq_goemans_param<32,2>;
+    using goemans_32vec_5e = pmc::seq_goemans_param<32,5>;
+    using goemans_32vec_10e = pmc::seq_goemans_param<32,10>;
+    using goemans_32vec_15e = pmc::seq_goemans_param<32,15>;
+    using goemans_32vec_20e = pmc::seq_goemans_param<32,20>;
+    using goemans_32vec_25e = pmc::seq_goemans_param<32,25>;
+    using goemans_32vec_30e = pmc::seq_goemans_param<32,30>;
+    using goemans_32vec_35e = pmc::seq_goemans_param<32,35>;
+    using goemans_32vec_40e = pmc::seq_goemans_param<32,40>;
+    using goemans_32vec_45e = pmc::seq_goemans_param<32,45>;
+    using goemans_32vec_50e = pmc::seq_goemans_param<32,50>;
 
     using gurobi = pmc::seq_gurobi;
 

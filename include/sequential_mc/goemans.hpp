@@ -35,7 +35,7 @@ inline static void mosek_set_num_threads(unsigned int threads) {
 // rand_count = 0 --> r = v_0
 // rand_count > 1 --> calc rand_count r with normalization and take the best one
 template<unsigned int rand_count, unsigned int epsilon = 1>
-struct seq_goemans {
+struct seq_goemans_param {
 
     inline static bool equ_sign(double a, double b){
         if (a<0){
@@ -349,6 +349,35 @@ struct seq_goemans {
       }
     }
   } // run
+}; // struct seq_goemans_param
+
+struct seq_goemans {
+
+    inline static bool equ_sign(double a, double b){
+        if (a<0){
+            if (b<0)
+                return true;
+        } else {
+            if (!(b<0))
+                return true;
+        }
+        return false;
+    }
+
+  static string const& name() {
+    static const string result = "seq-goemans";
+    return result;
+  }
+
+  template <typename GraphTraits>
+  inline static void run(graph<GraphTraits>& graph) {
+    seq_goemans_param<32,0>::run(graph);
+  }
+
+  template <typename GraphTraits>
+  inline static void run(graph<GraphTraits>& graph, unsigned int threads) {
+    seq_goemans_param<32,0>::run(graph, threads);
+  }
 }; // struct seq_goemans
 
 } // namespace pmc
