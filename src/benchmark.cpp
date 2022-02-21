@@ -37,7 +37,6 @@
 #include <sequential_mc/derandomized.hpp>
 #include <sequential_mc/brute_force.hpp>
 #include <sequential_mc/random.hpp>
-#include <sequential_mc/relaxation.hpp>
 #include <sequential_mc/bias.hpp>
 #include <sequential_mc/local_search.hpp>
 
@@ -55,6 +54,7 @@
 #include <util/logging.hpp>
 
 #ifdef USE_GUROBI
+    #include <sequential_mc/relaxation.hpp>
     #include <sequential_mc/gurobi.hpp>
 #endif
 #ifdef USE_MOSEK
@@ -88,13 +88,13 @@ private:
     using buchbinder_rand = pmc::seq_buchbinder_rand;
     using derandomized = pmc::seq_derandomized;
     using random = pmc::seq_random;
-    using relax = pmc::seq_lp_relaxation;
     using bias = pmc::seq_bias;
 
     using merge_skip = pmc::seq_alternate01;
     using mergetree_4 = pmc::par_mergetree<4>;
     using mergetree_16 = pmc::par_mergetree<16>;
 
+#ifdef USE_MOSEK
     using goemans_32vec_0e = pmc::seq_goemans;
     using goemans_32vec_1e = pmc::seq_goemans_param<32,1>;
     using goemans_32vec_2e = pmc::seq_goemans_param<32,2>;
@@ -108,91 +108,77 @@ private:
     using goemans_32vec_40e = pmc::seq_goemans_param<32,40>;
     using goemans_32vec_45e = pmc::seq_goemans_param<32,45>;
     using goemans_32vec_50e = pmc::seq_goemans_param<32,50>;
+#endif
 
+#ifdef USE_GUROBI
+    using relax = pmc::seq_lp_relaxation;
     using gurobi = pmc::seq_gurobi;
+#endif
 
     // Mergers
     using merge_by_maxcut_skip = pmc::merger_max_cut<merge_skip>;
     using merge_by_maxcut_derandomized = pmc::merger_max_cut<derandomized>;
     using merge_by_maxcut_buchbinder = pmc::merger_max_cut<buchbinder>;
-    using merge_by_maxcut_goemans = pmc::merger_max_cut<goemans_32vec_0e>;
-    using merge_by_maxcut_gurobi = pmc::merger_max_cut<gurobi>;
 
-    using merge_by_maxcut_tree_goemans_4 = pmc::merger_max_cut_tree<goemans_32vec_0e, 4>;
 
     using merge_by_maxcut_tree_skip_64 = pmc::merger_max_cut_tree<merge_skip, 64>;
     using merge_by_maxcut_tree_derandomized_64 = pmc::merger_max_cut_tree<derandomized, 64>;
     using merge_by_maxcut_tree_buchbinder_64 = pmc::merger_max_cut_tree<buchbinder, 64>;
-    using merge_by_maxcut_tree_goemans_64 = pmc::merger_max_cut_tree<goemans_32vec_0e, 64>;
-    using merge_by_maxcut_tree_gurobi_64 = pmc::merger_max_cut_tree<gurobi, 64>;
 
     using merge_by_maxcut_tree_skip_128 = pmc::merger_max_cut_tree<merge_skip, 128>;
     using merge_by_maxcut_tree_derandomized_128 = pmc::merger_max_cut_tree<derandomized, 128>;
     using merge_by_maxcut_tree_buchbinder_128 = pmc::merger_max_cut_tree<buchbinder, 128>;
-    using merge_by_maxcut_tree_goemans_128 = pmc::merger_max_cut_tree<goemans_32vec_0e, 128>;
-    using merge_by_maxcut_tree_gurobi_128 = pmc::merger_max_cut_tree<gurobi, 128>;
 
     using merge_by_maxcut_tree_skip_256 = pmc::merger_max_cut_tree<merge_skip, 256>;
     using merge_by_maxcut_tree_derandomized_256 = pmc::merger_max_cut_tree<derandomized, 256>;
     using merge_by_maxcut_tree_buchbinder_256 = pmc::merger_max_cut_tree<buchbinder, 256>;
-    using merge_by_maxcut_tree_goemans_256 = pmc::merger_max_cut_tree<goemans_32vec_0e, 256>;
-    using merge_by_maxcut_tree_gurobi_256 = pmc::merger_max_cut_tree<gurobi, 256>;
 
     using merge_by_maxcut_tree_skip_512 = pmc::merger_max_cut_tree<merge_skip, 512>;
     using merge_by_maxcut_tree_derandomized_512 = pmc::merger_max_cut_tree<derandomized, 512>;
     using merge_by_maxcut_tree_buchbinder_512 = pmc::merger_max_cut_tree<buchbinder, 512>;
-    using merge_by_maxcut_tree_goemans_512 = pmc::merger_max_cut_tree<goemans_32vec_0e, 512>;
-    using merge_by_maxcut_tree_gurobi_512 = pmc::merger_max_cut_tree<gurobi, 512>;
 
     using merge_by_maxcut_tree_skip_1024 = pmc::merger_max_cut_tree<merge_skip, 1024>;
     using merge_by_maxcut_tree_derandomized_1024 = pmc::merger_max_cut_tree<derandomized, 1024>;
     using merge_by_maxcut_tree_buchbinder_1024 = pmc::merger_max_cut_tree<buchbinder, 1024>;
-    using merge_by_maxcut_tree_goemans_1024 = pmc::merger_max_cut_tree<goemans_32vec_0e, 1024>;
+
+#ifdef USE_GUROBI
+    using merge_by_maxcut_gurobi = pmc::merger_max_cut<gurobi>;
+    using merge_by_maxcut_tree_gurobi_64 = pmc::merger_max_cut_tree<gurobi, 64>;
+    using merge_by_maxcut_tree_gurobi_128 = pmc::merger_max_cut_tree<gurobi, 128>;
+    using merge_by_maxcut_tree_gurobi_256 = pmc::merger_max_cut_tree<gurobi, 256>;
+    using merge_by_maxcut_tree_gurobi_512 = pmc::merger_max_cut_tree<gurobi, 512>;
     using merge_by_maxcut_tree_gurobi_1024 = pmc::merger_max_cut_tree<gurobi, 1024>;
+#endif
+
+#ifdef USE_MOSEK
+    using merge_by_maxcut_goemans = pmc::merger_max_cut<goemans_32vec_0e>;
+    using merge_by_maxcut_tree_goemans_4 = pmc::merger_max_cut_tree<goemans_32vec_0e, 4>;
+    using merge_by_maxcut_tree_goemans_64 = pmc::merger_max_cut_tree<goemans_32vec_0e, 64>;
+    using merge_by_maxcut_tree_goemans_128 = pmc::merger_max_cut_tree<goemans_32vec_0e, 128>;
+    using merge_by_maxcut_tree_goemans_256 = pmc::merger_max_cut_tree<goemans_32vec_0e, 256>;
+    using merge_by_maxcut_tree_goemans_512 = pmc::merger_max_cut_tree<goemans_32vec_0e, 512>;
+    using merge_by_maxcut_tree_goemans_1024 = pmc::merger_max_cut_tree<goemans_32vec_0e, 1024>;
+#endif
 
     pmc::framework_runner
     ::partitioners<
-            //kaffpa,
             kaminpar,
-            //kaffpa_ml_2,
-            //kaffpa_ml_4,
-            //kaffpa_ml_8,
-            //kaffpa_ml_16,
-            //kaffpa_ml_32,
-            //kaffpa_ml_64,
             nodeslice
             //edgeslice
     >
     ::seqMCs<
-            buchbinder,
-            //buchbinder_rand,
-            //buchbinder_rand,
-            derandomized,
-            random,
+#ifdef USE_MOSEK
             goemans_32vec_0e,
-            //goemans_32vec_1e
-            //goemans_32vec_2e,
-            //goemans_32vec_5e,
-            //goemans_32vec_10e,
-            //goemans_32vec_15e,
-            //goemans_32vec_20e,
-            //goemans_32vec_25e,
-            //goemans_32vec_30e,
-            //goemans_32vec_35e,
-            //goemans_32vec_40e,
-            //goemans_32vec_45e,
-            //goemans_32vec_50e,
-            gurobi
-            //cbc,
-            //derandomized_opt_goemans,
-            //derandomized_opt_gurobi
-            //ls_goemans,
-            //ls_optimize,
-            //ls_derandomized
-            //bias
-            //relax
+#endif
+#ifdef USE_GUROBI
+            gurobi,
+#endif
+            buchbinder,
+            derandomized,
+            random
     >
     ::mergeMCs<
+#ifdef USE_MOSEK
             merge_by_maxcut_goemans,
             merge_by_maxcut_tree_goemans_4,
             merge_by_maxcut_tree_goemans_64,
@@ -200,6 +186,7 @@ private:
             merge_by_maxcut_tree_goemans_256,
             merge_by_maxcut_tree_goemans_512,
             merge_by_maxcut_tree_goemans_1024,
+#endif
             merge_by_maxcut_tree_derandomized_1024
     >
     ::run(graph_cp, k, threads, partitioner,
