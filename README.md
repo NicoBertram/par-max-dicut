@@ -11,7 +11,7 @@ This framework has the following dependencies:
 * OpenMP
 * Intel Thread Building Blocks library (TBB)
 * Optional:
-    * Gurobi (To solve Linear Programs
+    * Gurobi (To solve Linear Programs)
     * Mosek (To solve Semidefinite Programs)
 
 ## Building
